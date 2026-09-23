@@ -22,10 +22,23 @@ rec {
       echo hello > $out
     '';
   };
+
+  big = mkDerivation {
+    name = "big";
+    inherit seed;
+    script = ''
+      # Copy busybox approximately the right amount of times to make an 800M output path
+      size=$($busybox stat -c %s $busybox)
+      count=$((800*1024 / (size / 1024)))
+      $busybox cat $(printf "%.0s$busybox " $($busybox seq $count)) > $out
+    '';
+  };
+  
   dependent = mkDerivation {
     name = "dependent";
     script = ''
       echo ${trivial} > $out
+      echo ${big} >> $out
     '';
   };
   multi-output = mkDerivation {
