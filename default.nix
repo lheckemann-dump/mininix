@@ -1,4 +1,4 @@
-{ system ? builtins.currentSystem, seed ? "", bigTreeWidths ? [ 5 5 5 5 ] }:
+{ system ? builtins.currentSystem, seed ? "", bigTreeWidths ? [ 5 5 5 5 ], bigTreeExtraScript ? "" }:
 rec {
   # pkgsStatic.busybox for the respective systems, from
   # nixpkgs b36e8f733df3ca8a60fec114e1ce85e15fb198b2
@@ -58,6 +58,7 @@ rec {
       inherit deps seed;
       script = ''
         echo $deps > $out
+        ${bigTreeExtraScript}
       '';
     };
 
