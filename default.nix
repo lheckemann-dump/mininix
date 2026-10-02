@@ -52,8 +52,8 @@ rec {
 
   
   bigTree = let
-    treeDrv = n: deps: mkDerivation {
-      name = "tree-${toString n}";
+    treeDrv = suffix: deps: mkDerivation {
+      name = "tree${suffix}";
       outputs = ["out"];
       inherit deps seed;
       script = ''
@@ -61,12 +61,12 @@ rec {
       '';
     };
 
-    makeTreeDrvs = depth: widths: if widths == [] then [(treeDrv depth [])] else
+    makeTreeDrvs = prefix: widths: if widths == [] then [(treeDrv prefix [])] else
       let
         width = builtins.head widths;
         range = n: if n <= 0 then [] else (range (n - 1)) ++ [n];
-        deps = builtins.map (n: makeTreeDrvs (depth*10+n) (builtins.tail widths)) (range width);
-      in treeDrv depth deps;
+        deps = builtins.map (n: makeTreeDrvs (prefix + "-${toString n}") (builtins.tail widths)) (range width);
+      in treeDrv prefix deps;
   in 
-    makeTreeDrvs 0 bigTreeWidths;
+    makeTreeDrvs "" bigTreeWidths;
 }
